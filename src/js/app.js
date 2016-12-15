@@ -2,8 +2,8 @@
 
 (function ($, initials, _, githubApi) {
   'use strict';
-
-  var repoUrl = 'https://github.com/gr2m/milestones';
+  var repoUrl = 'https://github.com/richardofortune/milestones_mapper';
+  // var repoUrl = 'https://github.com/gr2m/milestones';
   var repoUsername = repoUrl.match(/github.com\/([^\/]+)/).pop();
   var repoName = repoUrl.match(/github.com\/[^\/]+\/([^\/]+)/).pop();
   var rowTemplate = '';

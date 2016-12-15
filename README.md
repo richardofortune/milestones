@@ -1,4 +1,3 @@
-[![Stories in Ready](https://badge.waffle.io/richardofortune/milestones.png?label=ready&title=Ready)](https://waffle.io/richardofortune/milestones)
 Milestones
 ==========
 
