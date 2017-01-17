@@ -16,6 +16,14 @@ function debug {
     fi
 }
 
+function curlVerbosity {
+  if [ ! -z $DEBUG ]; then
+    -i
+  else
+    -s
+  fi
+}
+
 function post {
   path=$1
   body=$2
@@ -23,7 +31,7 @@ function post {
 
   debug "POST $url"
 
-  curl -u $username:$accessToken -iL -X POST -d "$body" -H 'Content-Type: application/json' "$url"
+  curl -u $username:$accessToken $curlVerbosity -L -X POST -d "$body" -H 'Content-Type: application/json' "$url"
 }
 
 function _delete {
