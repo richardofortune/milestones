@@ -83,3 +83,4 @@ function addIssues {
 
 addLabels
 addMilestones
+addIssues
