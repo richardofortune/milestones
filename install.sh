@@ -6,12 +6,22 @@ username=$1
 repo="onboarding_me"
 accessToken=$2
 
+function yellow {
+    echo -e "\e[33m$@\e[0m"
+}
+
+function debug {
+    if [ ! -z $DEBUG ]; then
+        yellow "[DEBUG] $1"
+    fi
+}
+
 function post {
   path=$1
   body=$2
   url=https://api.github.com/repos/$username/$repo$path
 
-  # echo "url: $url"
+  debug "POST $url"
 
   curl -u $username:$accessToken -iL -X POST -d "$body" -H 'Content-Type: application/json' "$url"
 }
@@ -21,7 +31,7 @@ function _delete {
 
   url=https://api.github.com/repos/$username/$repo$path
 
-  # echo "url: $url"
+  debug "DELETE $url"
 
   curl -u $username:$accessToken -X DELETE "$url"
 }
@@ -29,9 +39,13 @@ function _delete {
 function addLabels {
   echo "Creating labels"
 
+  _delete '/labels/1%20Easy'
+  _delete '/labels/2%20Medium'
+  _delete '/labels/3%20Hard'
+
   curl -u $username:$accessToken -iL -X POST -d '{ "name": "1 Easy", "color" : "00ff00" }' -H 'Content-Type: application/json' "https://api.github.com/repos/$username/$repo/labels"
-  curl -u $username:$accessToken -iL -X POST -d '{ "name": "1 Medium" }' -H 'Content-Type: application/json' "https://api.github.com/repos/$username/$repo/labels"
-  curl -u $username:$accessToken -iL -X POST -d '{ "name": "2 Hard", "color" : "ff0000" }' -H 'Content-Type: application/json' "https://api.github.com/repos/$username/$repo/labels"
+  curl -u $username:$accessToken -iL -X POST -d '{ "name": "2 Medium" }' -H 'Content-Type: application/json' "https://api.github.com/repos/$username/$repo/labels"
+  curl -u $username:$accessToken -iL -X POST -d '{ "name": "3 Hard", "color" : "ff0000" }' -H 'Content-Type: application/json' "https://api.github.com/repos/$username/$repo/labels"
 }
 
 # todo: add emoji
@@ -59,5 +73,5 @@ function addIssues {
   curl -u $username:$accessToken -iL -X POST -d "$json" -H 'Content-Type: application/json' "https://api.github.com/repos/$username/$repo/issues"
 }
 
-#addLabels
+addLabels
 addMilestones
