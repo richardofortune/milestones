@@ -2,13 +2,15 @@ html, body {
   background: #ddd;
 }
 body {
-  font-family: Helvetica, Arial;
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
   line-height: 1.42857;
   color: #282726;
+  -webkit-font-smoothing: antialiased;
 }
 body > header {
   padding: 18px;
-  background-color: #fff;
+  background-color: #45474D; //#13B5EA;
+  color:#DADADB;
 }
 body > header a {
   color: #fff !important;
