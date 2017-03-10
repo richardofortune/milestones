@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# usage: install.sh ben-biddington repo-name {api key}
+# usage: install.sh ben-biddington {api key}
 
 username=$1
-repo="onboarding_me"
+repo="onboarding_me" #@todo: allow this to vary?
 accessToken=$2
-usage="./install.sh {github username} {repository name} {access token}"
+usage="./install.sh {github username} {access token}"
 
 function yellow { # https://gist.github.com/chrisopedia/8754917
     echo -e "\e[33m$@\e[0m"
@@ -103,7 +103,7 @@ function demandConnection {
 
     if [[ ! $replyStatus == *"200 OK"* ]]; then
         echo ""
-        red "Failed to authenticate with github api at <$url>. The status returned was:\n\n"
+        red "Failed to authenticate with github api at <$url> using access token <$accessToken>. The status returned was:\n\n"
         tabify "$replyStatus"
         echo -e '\n'
         red "Full reply:\n\n"
