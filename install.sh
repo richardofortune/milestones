@@ -7,14 +7,28 @@ repo="onboarding_me"
 accessToken=$2
 usage="./install.sh {github username} {repository name} {access token}"
 
-function yellow {
+function yellow { # https://gist.github.com/chrisopedia/8754917
     echo -e "\e[33m$@\e[0m"
+}
+
+function green {
+    echo -e "\e[32m$@\e[0m"
+}
+
+function red {
+    echo -e "\e[31m$@\e[0m"
 }
 
 function debug {
     if [ ! -z $DEBUG ]; then
         yellow "[DEBUG] $1"
     fi
+}
+
+function tabify {
+    echo "$1" | while read line ; do
+        red "\t$line"
+    done
 }
 
 function curlVerbosity {
@@ -89,12 +103,15 @@ function demandConnection {
 
     if [[ ! $replyStatus == *"200 OK"* ]]; then
         echo ""
-        echo -e 'Failed to authenticate with github api. The status returned was:\n\n'
-        echo "$replyStatus"
+        red "Failed to authenticate with github api at <$url>. The status returned was:\n\n"
+        tabify "$replyStatus"
         echo -e '\n'
-        echo -e "Full reply:\n\n$reply\n\n"
-        echo "Check you have supplied your github access token as command line parameters. Find your personal acces token at https://github.com/settings/tokens"
-        echo -e "\nUsage: $usage"
+        red "Full reply:\n\n"
+        tabify "$reply"
+        echo -e "\nCheck you have supplied your github access token as command line parameters."
+        echo -e "\nUsage:\n"
+        green "\t$usage"
+        echo -e "\nFind your personal access token at <https://github.com/settings/tokens>"
         exit 1
     fi
 }
