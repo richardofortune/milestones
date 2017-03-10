@@ -7,6 +7,12 @@ repo="onboarding_me" #@todo: allow this to vary?
 accessToken=$2
 usage="./install.sh {github username} {gihub access token}"
 
+if [ ! -z $DEBUG ]; then
+   curlVerbosity="-i"
+else
+   curlVerbosity="-s"
+fi
+
 function yellow { # https://gist.github.com/chrisopedia/8754917
     echo -e "\e[33m$@\e[0m"
 }
@@ -31,22 +37,14 @@ function tabify {
     done
 }
 
-function curlVerbosity {
-  if [ ! -z $DEBUG ]; then
-    -i
-  else
-    -s
-  fi
-}
-
 function post {
   path=$1
   body=$2
   url=https://api.github.com/repos/$username/$repo$path
 
-  debug "POST $url"
-
-  curl -u $username:$accessToken $curlVerbosity -L -X POST -d "$body" -H 'Content-Type: application/json' "$url"
+  debug "POST $url with verbosity <$curlVerbosity>"
+  
+  curl -u $username:$accessToken $curlVerbosity -L -X POST -d "$body" -H 'Content-Type: application/json' $url &> /dev/null
 }
 
 function _delete {
@@ -54,9 +52,9 @@ function _delete {
 
   url=https://api.github.com/repos/$username/$repo$path
 
-  debug "DELETE $url"
+  debug "DELETE $url with verbosity <$curlVerbosity>"
 
-  curl -u $username:$accessToken -X DELETE "$url"
+  curl -u $username:$accessToken $curlVerbosity -X DELETE "$url"
 }
 
 function addLabels {
@@ -66,9 +64,9 @@ function addLabels {
   _delete '/labels/2%20Medium'
   _delete '/labels/3%20Hard'
 
-  curl -u $username:$accessToken -iL -X POST -d '{ "name": "1 Easy", "color" : "00ff00" }' -H 'Content-Type: application/json' "https://api.github.com/repos/$username/$repo/labels"
-  curl -u $username:$accessToken -iL -X POST -d '{ "name": "2 Medium" }' -H 'Content-Type: application/json' "https://api.github.com/repos/$username/$repo/labels"
-  curl -u $username:$accessToken -iL -X POST -d '{ "name": "3 Hard", "color" : "ff0000" }' -H 'Content-Type: application/json' "https://api.github.com/repos/$username/$repo/labels"
+  post "/labels" '{ "name": "1 Easy", "color" : "00ff00" }'
+  post "/labels" '{ "name": "2 Medium" }'
+  post "/labels" '{ "name": "3 Hard", "color" : "ff0000" }'
 }
 
 # todo: add emoji
@@ -93,7 +91,7 @@ function addIssues {
 
   json='{ "title": "example" }'
 
-  curl -u $username:$accessToken -iL -X POST -d "$json" -H 'Content-Type: application/json' "https://api.github.com/repos/$username/$repo/issues"
+  post '/issues' $json -H 'Content-Type: application/json'
 }
 
 function demandConnection {
