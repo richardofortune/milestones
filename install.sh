@@ -5,6 +5,7 @@
 username=$1
 repo="onboarding_me"
 accessToken=$2
+usage="./install.sh {github username} {repository name} {access token}"
 
 function yellow {
     echo -e "\e[33m$@\e[0m"
@@ -81,6 +82,24 @@ function addIssues {
   curl -u $username:$accessToken -iL -X POST -d "$json" -H 'Content-Type: application/json' "https://api.github.com/repos/$username/$repo/issues"
 }
 
+function demandConnection {
+    local url="https://api.github.com"
+    local reply="`curl -u $username:$accessToken -iLs -H 'Content-Type: application/json' "$url"`"
+    local replyStatus="`echo "$reply" | head -n 1`"
+
+    if [[ ! $replyStatus == *"200 OK"* ]]; then
+        echo ""
+        echo -e 'Failed to authenticate with github api. The status returned was:\n\n'
+        echo "$replyStatus"
+        echo -e '\n'
+        echo -e "Full reply:\n\n$reply\n\n"
+        echo "Check you have supplied your github access token as command line parameters. Find your personal acces token at https://github.com/settings/tokens"
+        echo -e "\nUsage: $usage"
+        exit 1
+    fi
+}
+
+demandConnection
 addLabels
 addMilestones
 addIssues
