@@ -5,7 +5,7 @@
 username=$1
 repo="onboarding_me" #@todo: allow this to vary?
 accessToken=$2
-usage="./install.sh {github username} {access token}"
+usage="./install.sh {github username} {gihub access token}"
 
 function yellow { # https://gist.github.com/chrisopedia/8754917
     echo -e "\e[33m$@\e[0m"
@@ -108,7 +108,7 @@ function demandConnection {
         echo -e '\n'
         red "Full reply:\n\n"
         tabify "$reply"
-        echo -e "\nCheck you have supplied your github access token as command line parameters."
+        echo -e "\nCheck you have supplied your github access token as command line parameter."
         echo -e "\nUsage:\n"
         green "\t$usage"
         echo -e "\nFind your personal access token at <https://github.com/settings/tokens>"
