@@ -38,13 +38,19 @@ function tabify {
 }
 
 function post {
-  path=$1
-  body=$2
-  url=https://api.github.com/repos/$username/$repo$path
+    path=$1
+    body=$2
+    url=https://api.github.com/repos/$username/$repo$path
 
-  debug "POST $url with verbosity <$curlVerbosity>"
+    debug "POST $url with body <$body>"
+
+    local redirectTo='/dev/null'
   
-  curl -u $username:$accessToken $curlVerbosity -L -X POST -d "$body" -H 'Content-Type: application/json' $url &> /dev/null
+    if [ ! -z $DEBUG ]; then
+        redirectTo='/dev/stdout'
+    fi  
+  
+    curl -u $username:$accessToken $curlVerbosity -L -X POST -d "$body" -H 'Content-Type: application/json' $url &> redirectTo
 }
 
 function patch {
@@ -89,21 +95,24 @@ function addLabels {
 
 # todo: add emoji
 function addMilestones {
-  echo "Creating milestones"
+    echo "Creating milestones"
 
-  _delete '/milestones/1'
-  _delete '/milestones/2'
-  _delete '/milestones/3'
+    _delete '/milestones/1'
+    _delete '/milestones/2'
+    _delete '/milestones/3'
 
-  post '/milestones' '{ "title": "00 The People and The tools" }' -H 'Content-Type: application/json'
-  post '/milestones' '{ "title": "01 Getting hands on" }' -H 'Content-Type: application/json'
-  post '/milestones' '{ "title": "02 Doing your best work" }' -H 'Content-Type: application/json'
+    while read milestone
+    do
+        post '/milestones' "$milestone"
+    done < ./data/milestones
 }
 
 function enableIssues {
     local url=https://api.github.com/repos/$username/$repo
+
+    echo "Switching on issues"
     
-    echo "Switching on issues for username <$username> using access token <$accessToken> and <$url>"
+    debug "Switching on issues for username <$username> using access token <$accessToken> and <$url>"
 
     patch '' '{"name": "'$repo'", "has_issues": true}'
 }
@@ -111,7 +120,7 @@ function enableIssues {
 function addIssues {
     local url=https://api.github.com/repos/$username/$repo/issues
   
-    echo "Creating an issue for username <$username> using access token <$accessToken> using <$url>"
+    echo "Creating an example issue"
 
     post '/issues' $json '{ "title": "example" }'
 }
