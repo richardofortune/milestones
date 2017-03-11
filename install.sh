@@ -37,12 +37,13 @@ function tabify {
     done
 }
 
-function post {
-    path=$1
-    body=$2
-    url=https://api.github.com/repos/$username/$repo$path
+function send {
+    local verb=$1
+    local path=$2
+    local body=$3
+    local url=https://api.github.com/repos/$username/$repo$path
 
-    debug "POST $url with body <$body>"
+    debug "$verb to $url with body <$body>"
 
     local redirectTo='/dev/null'
   
@@ -50,42 +51,12 @@ function post {
         redirectTo='/dev/stdout'
     fi  
   
-    curl -u $username:$accessToken $curlVerbosity -L -X POST -d "$body" -H 'Content-Type: application/json' $url &> redirectTo
+    curl -u $username:$accessToken $curlVerbosity -L -X $verb -d "$body" -H 'Content-Type: application/json' $url &> redirectTo
 }
 
-function patch {
-    path=$1
-    body=$2
-  
-    url=https://api.github.com/repos/$username/$repo$path
-
-    debug "PATCH $url with payload $body"
-
-    local redirectTo='/dev/null'
-    
-    if [ ! -z $DEBUG ]; then
-        redirectTo='/dev/stdout'
-    fi
-  
-    curl -u $username:$accessToken $curlVerbosity -L -X PATCH -d "$body" -H 'Content-Type: application/json' $url &> $redirectTo
-}
-
-
-function _delete {
-    path=$1
-    
-    url=https://api.github.com/repos/$username/$repo$path
-
-    debug "DELETE $url"
-
-    local redirectTo='/dev/null'
-    
-    if [ ! -z $DEBUG ]; then
-        redirectTo='/dev/stdout'
-    fi
-    
-    curl -u $username:$accessToken $curlVerbosity -X DELETE "$url" &> $redirectTo
-}
+function post    { send 'POST'   $1 $2; }
+function patch   { send 'PATCH'  $1 $2; }
+function _delete { send 'DELETE' $1 $2; }
 
 function addLabels {
     echo "Creating labels"
