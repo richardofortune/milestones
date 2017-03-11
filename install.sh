@@ -47,6 +47,24 @@ function post {
   curl -u $username:$accessToken $curlVerbosity -L -X POST -d "$body" -H 'Content-Type: application/json' $url &> /dev/null
 }
 
+function patch {
+    path=$1
+    body=$2
+  
+    url=https://api.github.com/repos/$username/$repo$path
+
+    debug "PATCH $url with payload $body"
+
+    local redirectTo='/dev/null'
+    
+    if [ ! -z $DEBUG ]; then
+        redirectTo='/dev/stdout'
+    fi  
+  
+    curl -u $username:$accessToken $curlVerbosity -L -X PATCH -d "$body" -H 'Content-Type: application/json' $url &> $redirectTo
+}
+
+
 function _delete {
   path=$1
 
@@ -82,16 +100,20 @@ function addMilestones {
   post '/milestones' '{ "title": "02 Doing your best work" }' -H 'Content-Type: application/json'
 }
 
+function enableIssues {
+    local url=https://api.github.com/repos/$username/$repo
+    
+    echo "Switching on issues for username <$username> using access token <$accessToken> and <$url>"
+
+    patch '' '{"name": "'$repo'", "has_issues": true}'
+}
+
 function addIssues {
-  echo "Switching on issues for username <$username> using access token <$accessToken> using <https://api.github.com/repos/$username/$repo>"
+    local url=https://api.github.com/repos/$username/$repo/issues
+  
+    echo "Creating an issue for username <$username> using access token <$accessToken> using <$url>"
 
-  json='{ "name": "'$repo'", "has_issues": "true" }'
-
-  echo "Creating an issue for username <$username> using access token <$accessToken> using <https://api.github.com/repos/$username/$repo/issues>"
-
-  json='{ "title": "example" }'
-
-  post '/issues' $json -H 'Content-Type: application/json'
+    post '/issues' $json '{ "title": "example" }'
 }
 
 function demandConnection {
@@ -117,4 +139,4 @@ function demandConnection {
 demandConnection
 addLabels
 addMilestones
-addIssues
+enableIssues; addIssues
