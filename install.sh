@@ -65,8 +65,7 @@ function addLabels {
     _delete '/labels/2%20Medium'
     _delete '/labels/3%20Hard'
 
-    while read label
-    do
+    while read label; do 
         post '/labels' "$label"
     done < ./data/labels
 }
@@ -79,25 +78,18 @@ function addMilestones {
     _delete '/milestones/2'
     _delete '/milestones/3'
 
-    while read milestone
-    do
+    while read milestone; do
         post '/milestones' "$milestone"
     done < ./data/milestones
 }
 
 function enableIssues {
-    local url=https://api.github.com/repos/$username/$repo
-
     echo "Switching on issues"
     
-    debug "Switching on issues for username <$username> using access token <$accessToken> and <$url>"
-
     patch '' '{"name": "'$repo'", "has_issues": true}'
 }
 
 function addIssues {
-    local url=https://api.github.com/repos/$username/$repo/issues
-  
     echo "Creating an example issue"
 
     post '/issues' $json '{ "title": "example" }'
