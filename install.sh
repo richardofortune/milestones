@@ -65,32 +65,39 @@ function patch {
     
     if [ ! -z $DEBUG ]; then
         redirectTo='/dev/stdout'
-    fi  
+    fi
   
     curl -u $username:$accessToken $curlVerbosity -L -X PATCH -d "$body" -H 'Content-Type: application/json' $url &> $redirectTo
 }
 
 
 function _delete {
-  path=$1
+    path=$1
+    
+    url=https://api.github.com/repos/$username/$repo$path
 
-  url=https://api.github.com/repos/$username/$repo$path
+    debug "DELETE $url"
 
-  debug "DELETE $url with verbosity <$curlVerbosity>"
-
-  curl -u $username:$accessToken $curlVerbosity -X DELETE "$url"
+    local redirectTo='/dev/null'
+    
+    if [ ! -z $DEBUG ]; then
+        redirectTo='/dev/stdout'
+    fi
+    
+    curl -u $username:$accessToken $curlVerbosity -X DELETE "$url" &> $redirectTo
 }
 
 function addLabels {
-  echo "Creating labels"
+    echo "Creating labels"
 
-  _delete '/labels/1%20Easy'
-  _delete '/labels/2%20Medium'
-  _delete '/labels/3%20Hard'
+    _delete '/labels/1%20Easy'
+    _delete '/labels/2%20Medium'
+    _delete '/labels/3%20Hard'
 
-  post "/labels" '{ "name": "1 Easy", "color" : "00ff00" }'
-  post "/labels" '{ "name": "2 Medium" }'
-  post "/labels" '{ "name": "3 Hard", "color" : "ff0000" }'
+    while read label
+    do
+        post '/labels' "$label"
+    done < ./data/labels
 }
 
 # todo: add emoji
