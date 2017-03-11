@@ -51,7 +51,7 @@ function send {
         redirectTo='/dev/stdout'
     fi  
   
-    curl -u $username:$accessToken $curlVerbosity -L -X $verb -d "$body" -H 'Content-Type: application/json' $url &> redirectTo
+    curl -u $username:$accessToken $curlVerbosity -L -X $verb -d "$body" -H 'Content-Type: application/json' $url &> $redirectTo
 }
 
 function post    { send 'POST'   $1 $2; }
