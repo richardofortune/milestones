@@ -86,7 +86,7 @@ function addMilestones {
 function enableIssues {
     echo "Switching on issues"
     
-    patch '' '{"name": "'$repo'", "has_issues": true}'
+    patch '/' '{"name": "'$repo'", "has_issues": true}'
 }
 
 function addIssues {
